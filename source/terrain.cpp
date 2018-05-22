@@ -8,6 +8,7 @@
 
 #include <filesystem.h>
 #include <shader_s.h>
+#include <terraingen.h>
 
 #include <iostream>
 #include <cmath>
@@ -42,7 +43,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Terrain", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -115,18 +116,7 @@ int main()
     };
 
     // world space positions of our cubes
-    glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( 2.0f,  0.0f, -15.0f),
-        glm::vec3(-1.5f, 0.0f, -2.5f),
-        glm::vec3(-3.8f, 0.0f, -12.3f),
-        glm::vec3( 2.4f, 0.0f, -3.5f),
-        glm::vec3(-1.7f,  0.0f, -7.5f),
-        glm::vec3( 1.3f, 0.0f, -2.5f),
-        glm::vec3( 1.5f,  0.0f, -2.5f),
-        glm::vec3( 1.5f,  0.0f, -1.5f),
-        glm::vec3(-1.3f,  0.0f, -1.5f)
-    };
+    glm::vec3 *cubePositions = TerrainGen::getCoords().data();
 
 
     // set up VBO, EBO, VAO
