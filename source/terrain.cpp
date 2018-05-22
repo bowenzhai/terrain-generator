@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -115,9 +116,58 @@ int main()
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
-    // world space positions of our cubes
-    glm::vec3 *cubePositions = TerrainGen::getCoords().data();
+    float sides[] = {
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  -1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  -1.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,  -1.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  -1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  -1.0f, -1.0f,
+        0.5f,  0.5f,  0.5f,  -1.0f, -1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, -1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+
+        0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    };
+
+    float bottom[] {
+        // bottom
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    };
+
+    float top[] {
+        // top
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+
+    // world space positions of our cubes
+    std::vector<glm::vec4> cubePositions = TerrainGen::getCoords();
 
     // set up VBO, EBO, VAO
     // --------------------
@@ -134,6 +184,51 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);  
     // copies the previously defined vertex data into buffer's memory
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture coord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
+    // now do the same for sides, top, bottom
+    unsigned int VBO_SIDES, VAO_SIDES, EBO_SIDES;
+    // initialize vertex buffer object
+    glGenBuffers(1, &VBO_SIDES);
+    // initialize vertex array object
+    glGenVertexArrays(1, &VAO_SIDES);
+    // initialize element buffer object
+    glGenBuffers(1, &EBO_SIDES);
+    // bind vertex array object
+    glBindVertexArray(VAO_SIDES);
+    // bind newly created buffer with GL_ARRAY_BUFFER
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_SIDES);  
+    // copies the previously defined vertex data into buffer's memory
+    glBufferData(GL_ARRAY_BUFFER, sizeof(sides), sides, GL_STATIC_DRAW);
+        // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture coord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    
+
+    unsigned int VBO_TOP, VAO_TOP, EBO_TOP;
+    // initialize vertex buffer object
+    glGenBuffers(1, &VBO_TOP);
+    // initialize vertex array object
+    glGenVertexArrays(1, &VAO_TOP);
+    // initialize element buffer object
+    glGenBuffers(1, &EBO_TOP);
+    // bind vertex array object
+    glBindVertexArray(VAO_TOP);
+    // bind newly created buffer with GL_ARRAY_BUFFER
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_TOP);  
+    // copies the previously defined vertex data into buffer's memory
+    glBufferData(GL_ARRAY_BUFFER, sizeof(top), top, GL_STATIC_DRAW);
+
+
 /*     
     // bind the EBO and copy the indices into the buffer 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -150,10 +245,9 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-
     // load textures 1 and 2
     // ---------------------
-    unsigned int dirt, texture2;
+    unsigned int dirt, grass_side, grass_top;
     int width, height, nrChannels;
     // create texture 1 
     glGenTextures(1, &dirt);
@@ -166,7 +260,6 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load the texture
-    stbi_set_flip_vertically_on_load(true); 
     unsigned char *data = stbi_load(FileSystem::getPath("source/textures/dirt.png").c_str(), &width, &height, &nrChannels, 0);
     if (data) {
         // generate(target, mipmap level, format, w, h, 0, src_format, src_datatype, img_data)
@@ -178,11 +271,11 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
-/* 
+ 
     // create texture 2
-    glGenTextures(1, &texture2);
+    glGenTextures(1, &grass_side);
     // bind so any subsequent texture commands will configure the currently bound texture
-    glBindTexture(GL_TEXTURE_2D, texture2);
+    glBindTexture(GL_TEXTURE_2D, grass_side);
     // set the texture wrapping/filtering options (on the currently bound texture object)
     // s, t, r are the coordinates for textures
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
@@ -191,7 +284,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load the texture
     // tell stb_image.h to flip loaded texture's on the y-axis.
-    data = stbi_load(FileSystem::getPath("source/textures/awesomeface.png").c_str(), &width, &height, &nrChannels, 0);
+    data = stbi_load(FileSystem::getPath("source/textures/grass_side.png").c_str(), &width, &height, &nrChannels, 0);
     if (data) {
         // generate(target, mipmap level, format, w, h, 0, src_format, src_datatype, img_data)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -203,12 +296,37 @@ int main()
     }
     // free the image memory
     stbi_image_free(data);
- */
+
+    // create texture 3
+    glGenTextures(1, &grass_top);
+    // bind so any subsequent texture commands will configure the currently bound texture
+    glBindTexture(GL_TEXTURE_2D, grass_top);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    // s, t, r are the coordinates for textures
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load the texture
+    // tell stb_image.h to flip loaded texture's on the y-axis.
+    data = stbi_load(FileSystem::getPath("source/textures/grass_top.png").c_str(), &width, &height, &nrChannels, 0);
+    if (data) {
+        // generate(target, mipmap level, format, w, h, 0, src_format, src_datatype, img_data)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    // free the image memory
+    stbi_image_free(data);
+ 
 
     // activate shader before setting uniforms
     ourShader.use();
     // set it manually like so:
-    glUniform1i(glGetUniformLocation(ourShader.ID, "dirt"), 0);
+    //glUniform1i(glGetUniformLocation(ourShader.ID, "dirt"), 0);
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -226,11 +344,6 @@ int main()
         glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-
-        // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, dirt);
-
         // define the transformation matrix
         // init to identity matrix
         glm::mat4 transform;
@@ -246,7 +359,7 @@ int main()
         // view matrix: move the scene backwards
         glm::mat4 view;
         // note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, -2.0f, -8.0f)); 
+        view = glm::translate(view, glm::vec3(0.0f, -5.0f, -30.0f)); 
         //view = glm::rotate(view, glm::radians(-10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         // projection matrix: (fov, aspect, near, far)
@@ -265,15 +378,32 @@ int main()
         
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 
-        for(unsigned int i = 0; i < 10; i++)
-        {
+        int len = cubePositions.size();
+        for(unsigned int i = 0; i < len; i++) {
             glm::mat4 model;
-            model = glm::translate(model, cubePositions[i]);
+            glm::vec4 translation = cubePositions[i];
+            model = glm::translate(model, glm::vec3(translation.x, translation.y, translation.z));
+            //printf("x: %d y: %d z: %d", translation.x, translation.y, translation.z);
             float angle = 20.0f * (i + 1.0f); 
             //model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            if (translation.w == 0) {
+                // bind textures on corresponding texture units
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, dirt);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            } else if (translation.w == 1) {
+                glBindVertexArray(VAO_SIDES);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, grass_side);
+                glDrawArrays(GL_TRIANGLES, 0, 24);
+                glBindVertexArray(VAO_TOP);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, grass_top);
+                glDrawArrays(GL_TRIANGLES, 0, 12);
+            }
         }
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -284,6 +414,12 @@ int main()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &VAO_SIDES);
+    glDeleteBuffers(1, &VBO_SIDES);
+    glDeleteBuffers(1, &EBO_SIDES);
+    glDeleteVertexArrays(1, &VAO_TOP);
+    glDeleteBuffers(1, &VBO_TOP);
+    glDeleteBuffers(1, &EBO_TOP);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

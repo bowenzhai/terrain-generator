@@ -4,24 +4,46 @@
 #include <includes/glm/glm.hpp>
 #include <includes/glm/gtc/matrix_transform.hpp>
 #include <includes/glm/gtc/type_ptr.hpp>
+#include <includes/PerlinNoise.hpp>
 
 #include <vector>
 
 class TerrainGen {
 public:
-    static std::vector<glm::vec3> getCoords() {
-        std::vector<glm::vec3> cubePositions = {
-            glm::vec3( 0.0f,  0.0f,  0.0f),
-            glm::vec3( 2.0f,  0.0f, -15.0f),
-            glm::vec3(-1.5f, 0.0f, -2.5f),
-            glm::vec3(-3.8f, 0.0f, -12.3f),
-            glm::vec3( 2.4f, 0.0f, -3.5f),
-            glm::vec3(-1.7f,  0.0f, -7.5f),
-            glm::vec3( 1.3f, 0.0f, -2.5f),
-            glm::vec3( 1.5f,  0.0f, -2.5f),
-            glm::vec3( 1.5f,  0.0f, -1.5f),
-            glm::vec3(-1.3f,  0.0f, -1.5f)
-        };
+    static std::vector<glm::vec4> getCoords(int width = 40) {
+        std::vector<glm::vec4> cubePositions;
+
+        int start = (-1) * (width / 2);
+        int end = width / 2;
+
+		const siv::PerlinNoise perlin;
+		const double fx = width / 4;
+		const double fz = width / 4;
+
+		for (int z = start; z < end; ++z) {
+			for (int x = start; x < end; ++x) {
+                cubePositions.emplace_back(glm::vec4( x,  0.0f,  z,  0));
+
+                float f = perlin.octaveNoise0_1(x / fx, z / fz, 8);
+
+                int height = (f * 10) / 2;
+                
+                for (int h = 1; h <= height; ++h) {
+                    if (h = height) {
+                        cubePositions.emplace_back(glm::vec4( x,  h,  z,  1));
+                    } else {
+                        cubePositions.emplace_back(glm::vec4( x,  h,  z,  0));
+                    }
+                }
+			}
+		}
+
+/* 
+        std::vector<glm::vec4> cubePositions = {
+            glm::vec4( 0.0f,  0.0f,  0.0f,  0),
+            glm::vec4( 1.0f,  0.0f,  0.0f,  0),
+            glm::vec4( 0.0f,  1.0f,  0.0f,  1)
+        }; */
         return cubePositions;
     }
 };

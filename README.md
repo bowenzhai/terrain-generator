@@ -6,6 +6,7 @@ Randomly generates block-style terrain with OpenGL
 - Glad
 - stb
 - GLM 0.9.7.6
+- Reputeless/PerlinNoise
 
 ## Building
 ```
