@@ -117,15 +117,15 @@ int main()
     // world space positions of our cubes
     glm::vec3 cubePositions[] = {
         glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( 2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3( 1.3f, -2.0f, -2.5f),
-        glm::vec3( 1.5f,  2.0f, -2.5f),
-        glm::vec3( 1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
+        glm::vec3( 2.0f,  0.0f, -15.0f),
+        glm::vec3(-1.5f, 0.0f, -2.5f),
+        glm::vec3(-3.8f, 0.0f, -12.3f),
+        glm::vec3( 2.4f, 0.0f, -3.5f),
+        glm::vec3(-1.7f,  0.0f, -7.5f),
+        glm::vec3( 1.3f, 0.0f, -2.5f),
+        glm::vec3( 1.5f,  0.0f, -2.5f),
+        glm::vec3( 1.5f,  0.0f, -1.5f),
+        glm::vec3(-1.3f,  0.0f, -1.5f)
     };
 
 
@@ -163,12 +163,12 @@ int main()
 
     // load textures 1 and 2
     // ---------------------
-    unsigned int texture1, texture2;
+    unsigned int dirt, texture2;
     int width, height, nrChannels;
     // create texture 1 
-    glGenTextures(1, &texture1);
+    glGenTextures(1, &dirt);
     // bind so any subsequent texture commands will configure the currently bound texture
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    glBindTexture(GL_TEXTURE_2D, dirt);
     // set the texture wrapping/filtering options (on the currently bound texture object)
     // s, t, r are the coordinates for textures
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
@@ -177,10 +177,10 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load the texture
     stbi_set_flip_vertically_on_load(true); 
-    unsigned char *data = stbi_load(FileSystem::getPath("source/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load(FileSystem::getPath("source/textures/dirt.png").c_str(), &width, &height, &nrChannels, 0);
     if (data) {
         // generate(target, mipmap level, format, w, h, 0, src_format, src_datatype, img_data)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -188,7 +188,7 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
-
+/* 
     // create texture 2
     glGenTextures(1, &texture2);
     // bind so any subsequent texture commands will configure the currently bound texture
@@ -211,15 +211,14 @@ int main()
     {
         std::cout << "Failed to load texture" << std::endl;
     }
-
     // free the image memory
     stbi_image_free(data);
+ */
+
     // activate shader before setting uniforms
     ourShader.use();
-    // either set it manually like so:
-    glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
-    // or set it via the texture class
-    ourShader.setInt("texture2", 1);
+    // set it manually like so:
+    glUniform1i(glGetUniformLocation(ourShader.ID, "dirt"), 0);
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -234,15 +233,13 @@ int main()
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
 
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        glBindTexture(GL_TEXTURE_2D, dirt);
 
         // define the transformation matrix
         // init to identity matrix
@@ -259,7 +256,8 @@ int main()
         // view matrix: move the scene backwards
         glm::mat4 view;
         // note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); 
+        view = glm::translate(view, glm::vec3(0.0f, -2.0f, -8.0f)); 
+        //view = glm::rotate(view, glm::radians(-10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         // projection matrix: (fov, aspect, near, far)
         glm::mat4 projection;
@@ -282,7 +280,7 @@ int main()
             glm::mat4 model;
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * (i + 1.0f); 
-            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            //model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             glDrawArrays(GL_TRIANGLES, 0, 36);
