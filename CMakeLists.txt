@@ -5,7 +5,7 @@ project(terrain)
 # Source files
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source")
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries")
-set(SOURCES "${SRC_DIR}/terrain.cpp")
+set(SOURCES "${SRC_DIR}/window.cpp")
 
 # Set root directory
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)

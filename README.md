@@ -1,12 +1,12 @@
 # terrain-generator
-Randomly generates block-style terrain with OpenGL
+Proceduraly generates block-style terrain with OpenGL
 
 ## Libraries used
 - GLFW 3.2.1
 - Glad
-- stb
+- [nothings/stb](https://github.com/nothings/stb)
 - GLM 0.9.7.6
-- Reputeless/PerlinNoise
+- [Reputeless/PerlinNoise](https://github.com/Reputeless/PerlinNoise)
 
 ## Building
 ```

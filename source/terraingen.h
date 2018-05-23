@@ -37,13 +37,6 @@ public:
                 }
 			}
 		}
-
-/* 
-        std::vector<glm::vec4> cubePositions = {
-            glm::vec4( 0.0f,  0.0f,  0.0f,  0),
-            glm::vec4( 1.0f,  0.0f,  0.0f,  0),
-            glm::vec4( 0.0f,  1.0f,  0.0f,  1)
-        }; */
         return cubePositions;
     }
 };
