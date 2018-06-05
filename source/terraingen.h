@@ -10,13 +10,17 @@
 
 class TerrainGen {
 public:
-    static std::vector<glm::vec4> getCoords(int width = 40) {
+    static std::vector<glm::vec4> getCoords(int width = 100, int seed = 0) {
         std::vector<glm::vec4> cubePositions;
 
         int start = (-1) * (width / 2);
         int end = width / 2;
 
-		const siv::PerlinNoise perlin;
+		siv::PerlinNoise perlin;
+        if (seed != 0) {
+            perlin.reseed(seed);
+        }
+
 		const double fx = width / 4;
 		const double fz = width / 4;
 

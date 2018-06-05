@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -19,8 +20,7 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-static void error_callback(int error, const char* description)
-{
+static void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
 }
 
@@ -47,8 +47,7 @@ void initVBOVAO(unsigned int *VBO, unsigned int *VAO, float vertices[], int size
     glEnableVertexAttribArray(1);
 }
 
-int main()
-{
+int main(int argc, char** argv) {
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit()) exit(EXIT_FAILURE);
@@ -188,7 +187,17 @@ int main()
     };
 
     // world space positions of our cubes
-    std::vector<glm::vec4> cubePositions = TerrainGen::getCoords();
+    std::vector<glm::vec4> cubePositions;
+    if (argc == 1) {
+        cubePositions = TerrainGen::getCoords();
+    } else if (argc == 2) {
+        std::string arg1(argv[1]);
+        cubePositions = TerrainGen::getCoords(stoi(arg1));
+    } else if (argc == 3) {
+        std::string arg1(argv[1]);
+        std::string arg2(argv[2]);
+        cubePositions = TerrainGen::getCoords(stoi(arg1), stoi(arg2));
+    }
 
     // set up VBO, VAO
     // ---------------
@@ -253,8 +262,7 @@ int main()
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         // input
         // -----
         processInput(window);
@@ -266,7 +274,7 @@ int main()
 
         // draw each block
         int len = cubePositions.size();
-        for(unsigned int i = 0; i < len; i++) {
+        for (unsigned int i = 0; i < len; i++) {
             glm::mat4 model;
             glm::vec4 translation = cubePositions[i];
             model = glm::translate(model, glm::vec3(translation.x, translation.y, translation.z));
@@ -315,16 +323,14 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
-{
+void processInput(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
