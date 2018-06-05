@@ -20,6 +20,9 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// view matrix: move the scene backwards
+glm::mat4 view;
+
 static void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
 }
@@ -237,9 +240,10 @@ int main(int argc, char** argv) {
     // model matrix: rotate around all axes
     glm::mat4 model;
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-
+/* 
     // view matrix: move the scene backwards
     glm::mat4 view;
+*/
     // note that we're translating the scene in the reverse direction of where we want to move
     view = glm::translate(view, glm::vec3(0.0f, -5.0f, -30.0f)); 
 
@@ -271,6 +275,10 @@ int main(int argc, char** argv) {
         // ------
         glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
+
+        // update view information
+        unsigned int viewLoc  = glGetUniformLocation(ourShader.ID, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
         // draw each block
         int len = cubePositions.size();
@@ -324,8 +332,17 @@ int main(int argc, char** argv) {
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window) {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    } else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, 1.0f)); 
+    } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f)); 
+    } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        view = glm::translate(view, glm::vec3(1.0f, 0.0f, 0.0f)); 
+    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        view = glm::translate(view, glm::vec3(-1.0f, 0.0f, 0.0f)); 
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
