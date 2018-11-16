@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+// helper class from LearnOpenGL
 class Texture {
 private:
     unsigned int id;

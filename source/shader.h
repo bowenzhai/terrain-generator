@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iostream>
 
+// helper class from LearnOpenGL
 class Shader
 {
 public:

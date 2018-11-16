@@ -8,8 +8,12 @@
 
 #include <vector>
 
+// class to generate coordinates
 class TerrainGen {
 public:
+    // get a vector of world space coords.
+    // @param width the width of the square of coords to generate
+    // @param seed the random seed
     static std::vector<glm::vec4> getCoords(int width = 100, int seed = 0) {
         std::vector<glm::vec4> cubePositions;
 
