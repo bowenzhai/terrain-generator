@@ -9,16 +9,24 @@
 #include <vector>
 
 // class to generate coordinates
-class TerrainGen {
+class Terrain {
+private:
+    std::vector<glm::vec4> coords;
+    int width;
+    int seed;
 public:
-    // get a vector of world space coords.
+    Terrain(int width = 100, int seed = 0):width(width), seed(seed) {}
+
+    // generate vectors of world space coords.
     // @param width the width of the square of coords to generate
     // @param seed the random seed
-    static std::vector<glm::vec4> getCoords(int width = 100, int seed = 0) {
-        std::vector<glm::vec4> cubePositions;
+    std::vector<glm::vec4> genCoords(glm::vec3 worldPos) {
+        coords.clear();
 
-        int start = (-1) * (width / 2);
-        int end = width / 2;
+        int xStart = (-1) * (width / 2) + worldPos.x;
+        int xEnd = width / 2 + worldPos.x;
+        int zStart = (-1) * (width / 2) + worldPos.z;
+        int zEnd = width / 2 + worldPos.z;
 
 		siv::PerlinNoise perlin;
         if (seed != 0) {
@@ -28,24 +36,22 @@ public:
 		const double fx = width / 4;
 		const double fz = width / 4;
 
-		for (int z = start; z < end; ++z) {
-			for (int x = start; x < end; ++x) {
-                cubePositions.emplace_back(glm::vec4( x,  0.0f,  z,  0));
-
+		for (int z = zStart; z < zEnd; ++z) {
+			for (int x = xStart; x < xEnd; ++x) {
+                coords.emplace_back(glm::vec4( x,  0.0f,  z,  0));
                 float f = perlin.octaveNoise0_1(x / fx, z / fz, 8);
-
-                int height = (f * 10) / 2;
+                int height = f * 5;
                 
                 for (int h = 1; h <= height; ++h) {
                     if (h = height) {
-                        cubePositions.emplace_back(glm::vec4( x,  h,  z,  1));
+                        coords.emplace_back(glm::vec4( x,  h,  z,  1));
                     } else {
-                        cubePositions.emplace_back(glm::vec4( x,  h,  z,  0));
+                        coords.emplace_back(glm::vec4( x,  h,  z,  0));
                     }
                 }
 			}
 		}
-        return cubePositions;
+        return coords;
     }
 };
 

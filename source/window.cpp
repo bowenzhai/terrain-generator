@@ -22,7 +22,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 5.0f, 30.0f),
+Camera camera(glm::vec3(0.0f, 6.0f, 0.0f),
                 glm::vec3(0.0f, 0.0f, -1.0f),
                 glm::vec3(0.0f, 1.0f,  0.0f));
 
@@ -196,17 +196,19 @@ int main(int argc, char** argv) {
     };
 
     // world space positions of our cubes
+    Terrain terrain;
     std::vector<glm::vec4> cubePositions;
     if (argc == 1) {
-        cubePositions = TerrainGen::getCoords();
+        terrain = Terrain();
     } else if (argc == 2) {
         std::string arg1(argv[1]);
-        cubePositions = TerrainGen::getCoords(stoi(arg1));
+        terrain = Terrain(stoi(arg1));
     } else if (argc == 3) {
         std::string arg1(argv[1]);
         std::string arg2(argv[2]);
-        cubePositions = TerrainGen::getCoords(stoi(arg1), stoi(arg2));
+        terrain = Terrain(stoi(arg1), stoi(arg2));
     }
+    cubePositions = terrain.genCoords(camera.getPos());
 
     // set up VBO, VAO
     // ---------------
@@ -270,6 +272,11 @@ int main(int argc, char** argv) {
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window)) {
+        // per-frame time logic
+        // --------------------
+        float currentFrame = glfwGetTime();
+        camera.updateDelta(currentFrame);
+
         // input
         // -----
         processInput(window);
@@ -283,6 +290,9 @@ int main(int argc, char** argv) {
         view = camera.getViewMatrix();
         unsigned int viewLoc  = glGetUniformLocation(ourShader.ID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+        // update terrain information
+        cubePositions = terrain.genCoords(camera.getPos());
 
         // draw each block
         int len = cubePositions.size();
